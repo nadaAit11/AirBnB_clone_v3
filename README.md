@@ -1,6 +1,6 @@
 # AirBnB clone - The console
 
-![hbnb_stack](https://github.com/nadaAit11/AirBnB_clone_v2/assets/121446147/3a3b1952-4fd4-4999-9e7c-1344e927a6ad)
+![restful](https://github.com/nadaAit11/AirBnB_clone_v3/assets/121446147/8a7980dc-a12a-4f62-9736-c9a4e99c3b28)
 
 ## Desciption 
 AirBnB clone is a featuring database storage, a back-end API, and front-end interfacing in a clone of AirBnB. The project currently implements the back-end console.
