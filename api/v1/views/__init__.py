@@ -13,6 +13,7 @@ from api.v1.views.index import *
 from api.v1.views.states import *
 from api.v1.views.cities import *
 from api.v1.views.amenities import *
+from api.v1.views.users import *
 # Import your specific views
 # from api.v1.views.view1 import *
 # from api.v1.views.view2 import *
