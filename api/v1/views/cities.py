@@ -1,4 +1,6 @@
-sk route that returns json status response
+#!/usr/bin/python3
+"""
+Flask route that returns json status response
 """
 from api.v1.views import app_views
 from flask import abort, jsonify, request
