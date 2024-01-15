@@ -30,6 +30,20 @@ class FileStorage:
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
+    def get(self, cls, id):
+        """Retrieve one object"""
+        if cls not in classes.values():
+            return (None)
+        key = "{}.{}".format(cls.__name__, id)
+        return (self.__objects.get(key, None))
+
+    def count(self, cls=None):
+        """Count the number of objects in storage"""
+        if cls is None:
+            return len(self.__objects)
+        else:
+            return len(self.all(cls))
+
     def save(self):
         """Saves storage dictionary to file"""
         with open(FileStorage.__file_path, 'w') as f:
@@ -61,7 +75,6 @@ class FileStorage:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             if key in self.__objects:
                 del self.__objects[key]
-
 
     def close(self):
         """calls the reload method"""

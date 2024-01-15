@@ -169,6 +169,34 @@ class TestFileStorage_methods(unittest.TestCase):
         with self.assertRaises(TypeError):
             models.storage.reload(None)
 
+class TestFileStorageMethods(unittest.TestCase):
+    def setUp(self):
+        self.storage = FileStorage()
+        self.storage.reload()
+
+    def test_get_method(self):
+        # Add test cases for the get method
+        user = User()
+        user_id = user.id
+        self.storage.new(user)
+        self.storage.save()
+        retrieved_user = self.storage.get(User, user_id)
+        self.assertEqual(retrieved_user, user)
+
+        # Add more test cases as needed
+
+    def test_count_method(self):
+        # Add test cases for the count method
+        user1 = User()
+        state = State()
+        user2 = User()
+        self.storage.new(user1)
+        self.storage.new(state)
+        self.storage.new(user2)
+        self.storage.save()
+        user_count = self.storage.count(User)
+        self.assertEqual(user_count, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

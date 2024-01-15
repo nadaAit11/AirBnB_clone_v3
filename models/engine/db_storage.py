@@ -30,7 +30,7 @@ class DBStorage:
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(user, pwd, host, db),
                                       pool_pre_ping=True)
-        
+
         if env == "test":
             Base.metadata.drop_all(self.__engine)
 
@@ -54,6 +54,20 @@ class DBStorage:
         if obj:
             self.__session.add(obj)
 
+    def get(self, cls, id):
+        """Retrieve one object"""
+        if cls not in [User, State, City, Amenity, Place, Review]:
+            return (None)
+        return (self.__session.query(cls).get(id))
+
+    def count(self, cls=None):
+        """Count the number of objects in storage"""
+        if cls is None:
+            return (sum(len(self.all(c))
+                        for c in [User, State, City, Amenity, Place, Review]))
+        else:
+            return (len(self.all(cls)))
+
     def save(self):
         self.__session.commit()
 
@@ -65,7 +79,7 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(Session)
-    
+
     def close(self):
         """Close the working SQLAlchemy session."""
         self.__session.close()
