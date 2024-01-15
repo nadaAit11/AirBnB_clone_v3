@@ -1,73 +1,107 @@
-# api/v1/views/users.py
-from flask import jsonify, request, abort
-from . import app_views
-from models.user import User  # Import your User model
+#!/usr/bin/python3
+""" Module containing User View """
+from api.v1.views import app_views
+from flask import jsonify, abort, request
 from models import storage
+from models.user import User
 
-def to_dict(user):
-    """Converts a User instance to a dictionary."""
-    return {
-        'id': user.id,
-        'email': user.email,
-        'password': user.password,  # Note: This is just an example; handle password securely in your application
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'created_at': user.created_at.isoformat(),
-        'updated_at': user.updated_at.isoformat(),
-        # Add more fields as needed
-    }
 
-@app_views.route('/users', methods=['GET'])
+@app_views.route('/users', methods=['GET'], strict_slashes=False)
 def get_users():
-    users = storage.all(User).values()
-    return jsonify([to_dict(user) for user in users])
+    """ Retrieves the list of all User objects.
 
-@app_views.route('/users/<user_id>', methods=['GET'])
+        Returns:
+            List of dictionaries representing User objects in JSON format.
+    """
+    users = [user.to_dict() for user in storage.all("User").values()]
+    return jsonify(users)
+
+
+@app_views.route('/users/<string:user_id>', methods=['GET'],
+                 strict_slashes=False)
 def get_user(user_id):
-    user = storage.get(User, user_id)
-    if user is None:
-        abort(404)
-    return jsonify(to_dict(user))
+    """ Retrieves a User object based on `user_id`.
 
-@app_views.route('/users/<user_id>', methods=['DELETE'])
+    Args:
+        user_id (str): The UUID4 string representing a User object.
+
+    Returns:
+        Dictionary represention of a User object in JSON format.
+        404 error if `user_id` is not linked to any User object.
+    """
+    user_obj = storage.get("User", user_id)
+    if user_obj is None:
+        abort(404)
+    return jsonify(user_obj.to_dict())
+
+
+@app_views.route('/users/<string:user_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def delete_user(user_id):
-    user = storage.get(User, user_id)
-    if user is None:
+    """ Deletes a User object based on `user_id`.
+
+    Args:
+        user_id (str): The UUID4 string representing a User object.
+
+    Returns:
+        Returns an empty dictionary with the status code 200.
+        404 error if `user_id` is not linked to any User object.
+    """
+    user_obj = storage.get("User", user_id)
+    if user_obj is None:
         abort(404)
-    storage.delete(user)
+    user_obj.delete()
     storage.save()
-    return jsonify({}), 200
+    return jsonify({})
 
-@app_views.route('/users', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    if not data:
-        abort(400, 'Not a JSON')
-    if 'email' not in data:
-        abort(400, 'Missing email')
-    if 'password' not in data:
-        abort(400, 'Missing password')
 
-    user = User(**data)
-    user.save()
+@app_views.route('/users', methods=['POST'], strict_slashes=False)
+def add_user():
+    """ Creates a User object using HTTP body request fields.
 
-    return jsonify(to_dict(user)), 201
+    Returns:
+        Returns the new User object as a  dictionary in JSON format
+        with the status code 201.
+        400 error if HTTP body request is not a valid JSON or if the dictionary
+        passed does not contain the key `email` and/or `password`.
+    """
+    if request.json is None:
+        return "Not a JSON", 400
+    fields = request.get_json()
+    if fields.get('email') is None:
+        return "Missing email", 400
+    if fields.get('password') is None:
+        return "Missing password", 400
+    new_user = User(**fields)
+    new_user.save()
+    """ May need to call `get` on new_user for all attributes to show """
+    return jsonify(new_user.to_dict()), 201
 
-@app_views.route('/users/<user_id>', methods=['PUT'])
-def update_user(user_id):
-    user = storage.get(User, user_id)
-    if user is None:
+
+@app_views.route('/users/<string:user_id>', methods=['PUT'],
+                 strict_slashes=False)
+def edit_user(user_id):
+    """ Edit a User object using `user_id` and HTTP body request fields.
+
+    Args:
+        user_id (str): The UUID4 string representing a User object.
+
+    Returns:
+        Returns the User object as a dictionary in JSON format with the
+        status code 200.
+        400 error if the HTTP body request is not a valid JSON.
+        404 error if `user_id` is not linked to any User object.
+    """
+    user_obj = storage.get("User", user_id)
+    if user_obj is None:
         abort(404)
-
-    data = request.get_json()
-    if not data:
-        abort(400, 'Not a JSON')
-
-    # Update user with all key-value pairs from data, ignoring specified keys
-    for key, value in data.items():
-        if key not in ['id', 'email', 'created_at', 'updated_at']:
-            setattr(user, key, value)
-
-    user.save()
-
-    return jsonify(to_dict(user)), 200
+    if request.json is None:
+        return "Not a JSON", 400
+    fields = request.get_json()
+    for key in fields:
+        if key in ['id', 'email', 'created_at', 'update_at']:
+            continue
+        if hasattr(user_obj, key):
+            setattr(user_obj, key, fields[key])
+    user_obj.save()
+    return jsonify(user_obj.to_dict()), 200
