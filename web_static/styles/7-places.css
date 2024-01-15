@@ -1,0 +1,29 @@
+/* Styling for Places Section */
+.places {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+/* Styling for Individual Place Articles */
+article {
+    width: 390px;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 4px;
+    border: 1px solid #FF5A5F;
+}
+
+/* Styling for the "Places" Title */
+.places h1 {
+    font-size: 30px;
+    flex: 60%;
+    padding-top: 10px;
+    padding-left: 20px;
+}
+
+/* Styling for Place Names (h2) */
+.places article h2 {
+    font-size: 30px;
+    text-align: center;
+}
