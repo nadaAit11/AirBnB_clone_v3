@@ -16,7 +16,7 @@ class User(BaseModel, Base):
     Attributes:
         __tablename__ (str): The name of the MySQL table to store Users.
         email (Column): The email of the user.
-        _password (Column): The password of the user.
+        password (Column): The password of the user.
         first_name (Column): The user's first name.
         last_name (Column): The user's last name.
         places (relationship): The User-Place relationship.
@@ -30,7 +30,7 @@ class User(BaseModel, Base):
 
     # Represents a column containing a string (128 characters)
     # and can’t be null
-    _password = Column('password', String(128), nullable=False)
+    password = Column(String(128), nullable=False)
 
     # Represents a column containing a string (128 characters) and can be null
     first_name = Column(String(128), nullable=True)
