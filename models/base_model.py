@@ -60,8 +60,10 @@ class BaseModel:
         rdict["__class__"] = self.__class__.__name__
         if "_sa_instance_state" in rdict:
             del rdict["_sa_instance_state"]
+        if "password" in rdict and save_fs is None:
+            del rdict["password"]
         return rdict
-    
+
     def delete(self):
         """Delete the current instance from the storage"""
         models.storage.delete(self)

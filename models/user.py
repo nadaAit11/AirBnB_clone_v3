@@ -6,6 +6,7 @@ from sqlalchemy import Column, String
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
 from models.place import Place
+import hashlib
 
 
 class User(BaseModel, Base):
@@ -39,3 +40,13 @@ class User(BaseModel, Base):
 
     # Represents a relationship with the class Place
     places = relationship("Place", backref="user", cascade="all, delete")
+
+    @property
+    def password(self):
+        """Getter for the password attribute."""
+        return self._password
+
+    @password.setter
+    def password(self, pwd):
+        """Setter for the password attribute."""
+        self._password = hashlib.md5(pwd.encode()).hexdigest()
